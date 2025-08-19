@@ -7,18 +7,15 @@
     <style>
         :root {
             --primary-color: #007bff;
-            /* Light Mode Vars */
             --bg-color: #f0f0f0;
             --card-color: white;
             --text-color: #333;
             --subtle-text-color: #aaa;
             --border-color: #ddd;
-            /* Common Vars */
             --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             --transition-speed: 0.3s;
         }
         body.dark-mode {
-            /* Dark Mode Overrides */
             --bg-color: #121212;
             --card-color: #1e1e1e;
             --text-color: #f0f0f0;
@@ -105,7 +102,6 @@
             transition: width 0.5s ease;
         }
         
-        /* Gallery Styles */
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -150,7 +146,6 @@
         }
         .learn-more-card a:hover { text-decoration: underline; }
 
-        /* Dark Mode Toggle Styles */
         .theme-switch-wrapper {
             position: absolute;
             top: 1.5rem;
@@ -270,15 +265,15 @@
     <div class="ai-deep-dive-card">
         <h2>Inside the AI Model 🧠</h2>
         <h3>What kind of AI is used?</h3>
-        <p>This application uses a type of AI called a **Convolutional Neural Network (CNN)**, which is specifically designed for image recognition. The model is based on **MobileNet**, a lightweight and efficient CNN created by Google, perfect for running in a web browser.</p>
-        <p>The training process uses a powerful technique called **Transfer Learning**.</p>
+        <p>This application uses a type of AI called a Convolutional Neural Network (CNN), which is specifically designed for image recognition. The model is based on **MobileNet**, a lightweight and efficient CNN created by Google, perfect for running in a web browser.</p>
+        <p>The training process uses a powerful technique called Transfer Learning.</p>
         
         <h3>How does Transfer Learning work?</h3>
         <p>Instead of training an AI from scratch (which would take millions of images and huge amounts of computer power), we use a shortcut:</p>
         <ol>
-            <li><strong>Start with an Expert:** We begin with the pre-trained MobileNet model, which is already an expert at recognizing general visual features—like edges, textures, colors, and simple shapes—because it has been trained on the massive ImageNet dataset.</li>
-            <li><strong>Freeze the Knowledge:** We "freeze" the early layers of this expert model, preserving its core knowledge of basic visual concepts.</li>
-            <li><strong>Teach a New Skill:** We then replace and retrain only the final layers of the network. We show it our specific images of Telangana art and teach it to combine its existing knowledge of basic features to recognize our new categories (Cheriyal, Ikat, etc.).</li>
+            <li><strong>Start with an Expert</strong>strong>: We begin with the pre-trained MobileNet model, which is already an expert at recognizing general visual features—like edges, textures, colors, and simple shapes—because it has been trained on the massive ImageNet dataset.</li>
+            <li><strong>Freeze the Knowledge</strong>strong>: We "freeze" the early layers of this expert model, preserving its core knowledge of basic visual concepts.</li>
+            <li><strong>Teach a New Skill</strong>strong>: We then replace and retrain only the final layers of the network. We show it our specific images of Telangana art and teach it to combine its existing knowledge of basic features to recognize our new categories (Cheriyal, Ikat, etc.).</li>
         </ol>
         <p>Think of it like teaching an experienced art historian to identify a new artist's work. You don't need to teach them what "color" or "texture" is; you just show them the new examples, and they apply their vast existing knowledge to learn the new style quickly.</p>
     </div>
@@ -310,7 +305,6 @@
         const uploadBtnLabel = document.querySelector(".upload-btn");
         const imageUpload = document.getElementById("image-upload");
 
-        // Dark Mode Logic
         const themeCheckbox = document.getElementById('theme-checkbox');
         themeCheckbox.addEventListener('change', () => {
             if (themeCheckbox.checked) {
@@ -375,4 +369,5 @@
     </script>
 </body>
 </html>
+
 
