@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telangana Art Form Classifier</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            /* Light Mode Vars */
+            --bg-color: #f0f0f0;
+            --card-color: white;
+            --text-color: #333;
+            --subtle-text-color: #aaa;
+            --border-color: #ddd;
+            /* Common Vars */
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition-speed: 0.3s;
+        }
+        body.dark-mode {
+            /* Dark Mode Overrides */
+            --bg-color: #121212;
+            --card-color: #1e1e1e;
+            --text-color: #f0f0f0;
+            --subtle-text-color: #888;
+            --border-color: #444;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 2rem;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+        .card, .explanation-card, .gallery-card, .learn-more-card {
+            background-color: var(--card-color);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            margin-bottom: 2rem;
+            transition: background-color var(--transition-speed);
+            position: relative;
+        }
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+        #image-container {
+            margin: 1.5rem auto;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--subtle-text-color);
+        }
+        #image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 6px;
+        }
+        input[type="file"] { display: none; }
+        .upload-btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .upload-btn:hover { background-color: #0056b3; }
+        .upload-btn[disabled] {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .prediction {
+            display: flex;
+            align-items: center;
+            margin: 0.8rem 0;
+            text-align: left;
+        }
+        .prediction-label { width: 150px; font-weight: 600; }
+        .bar-container {
+            flex-grow: 1;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            height: 20px;
+            margin: 0 1rem;
+        }
+        .bar {
+            background-color: var(--primary-color);
+            height: 100%;
+            border-radius: 8px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        /* Gallery Styles */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .gallery-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+        .gallery-item .caption {
+            padding: 0.5rem;
+            font-weight: 600;
+            background-color: var(--bg-color);
+        }
+
+        /* Explanation & Learn More Styles */
+        .explanation-card, .learn-more-card { text-align: left; }
+        .explanation-card h2, .learn-more-card h2 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .learn-more-card h3 { margin-top: 1.5rem; }
+        .learn-more-card ul, .explanation-card ul {
+            padding-left: 20px;
+            list-style: square;
+        }
+        .learn-more-card li, .explanation-card li { margin-bottom: 0.5rem; }
+        .learn-more-card a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .learn-more-card a:hover { text-decoration: underline; }
+
+        /* Dark Mode Toggle Styles */
+        .theme-switch-wrapper {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .theme-switch {
+            display: inline-block;
+            height: 26px;
+            position: relative;
+            width: 50px;
+        }
+        .theme-switch input { display: none; }
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 26px;
+        }
+        .slider:before {
+            background-color: #fff;
+            bottom: 4px;
+            content: "☀️";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 12px;
+            line-height: 18px;
+        }
+        input:checked + .slider { background-color: var(--primary-color); }
+        input:checked + .slider:before {
+            transform: translateX(24px);
+            content: "🌙";
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .card, .explanation-card, .gallery-card, .learn-more-card {
+                padding: 1.5rem;
+                width: 95%;
+            }
+            #image-container { width: 100%; height: 250px; }
+            .prediction {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .bar-container { width: 100%; margin: 0.5rem 0 0 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="theme-switch-wrapper">
+            <label class="theme-switch" for="theme-checkbox">
+                <input type="checkbox" id="theme-checkbox" />
+                <div class="slider"></div>
+            </label>
+        </div>
+        <h1>Telangana Art Classifier</h1>
+        <div id="status">Loading Model...</div>
+        <label for="image-upload" class="upload-btn">Upload Image</label>
+        <input type="file" id="image-upload" accept="image/*" disabled />
+        <div id="image-container">
+            <div>Please wait for the model to load</div>
+        </div>
+        <div id="label-container"></div>
+    </div>
+    
+    <div class="gallery-card">
+        <h2>Art Form Gallery</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="cheriyal.jpg" alt="Cheriyal Scrolls">
+                <div class="caption">Cheriyal Scrolls</div>
+            </div>
+            <div class="gallery-item">
+                <img src="pochampally.jpg" alt="Pochampally Ikat">
+                <div class="caption">Pochampally Ikat</div>
+            </div>
+            <div class="gallery-item">
+                <img src="Nirmal_Painting.jpg" alt="Nirmal Paintings">
+                <div class="caption">Nirmal Paintings</div>
+            </div>
+            <div class="gallery-item">
+                <img src="golconda.jpg" alt="Golconda Paintings">
+                <div class="caption">Golconda Paintings</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="learn-more-card">
+        <h2>Learn More About The Art</h2>
+        <h3>Cheriyal Scrolls</h3>
+        <p>A stylized version of Nakashi art, Cheriyal Scroll Painting is a unique art form from Telangana. These scrolls are painted in a narrative format, much like a film roll or a comic strip, depicting stories from Indian mythology and folklore. They are known for their vibrant colors, predominantly red backgrounds, and the distinct local customs they portray.</p>
+        
+        <h3>Pochampally Ikat</h3>
+        <p>Pochampally Ikat is a world-famous textile art known for its intricate geometric patterns. This traditional craft involves a meticulous process of resist dyeing the yarn *before* it is woven into fabric. The precision required to align the dyed threads on the loom to form the pattern makes each piece a masterpiece of skill and patience.</p>
+        
+        <h3>Nirmal Paintings</h3>
+        <p>Originating from the town of Nirmal, these paintings are renowned for their elegance and rich colors. Traditionally painted on wooden boards, Nirmal art depicts themes from the Ramayana and Mahabharata. A distinguishing feature is the use of a herbal extract to give the paintings a unique golden sheen.</p>
+        
+        <h3>Golconda Paintings</h3>
+        <p>A branch of Deccani painting, the Golconda style flourished in the 16th and 17th centuries. These paintings are characterized by their rich color palettes, sensual treatment of figures, and influence from Persian art. They often portray courtly scenes, portraits of rulers, and aristocratic life with a lyrical and romantic quality.</p>
+        
+        <h3>Resources</h3>
+        <ul>
+            <li><a href="https://tourism.telangana.gov.in/arts" target="_blank">Telangana Tourism - Arts & Crafts</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Cheriyal_scroll_painting" target="_blank">Wikipedia: Cheriyal Scroll Painting</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Pochampally_saree" target="_blank">Wikipedia: Pochampally Ikat</a></li>
+        </ul>
+    </div>
+
+    <div class="explanation-card">
+        <h2>How This Works</h2>
+        <h3>What is this?</h3>
+        <p>This is an Image Classifier for Telangana Art. It's an AI model trained to recognize and differentiate between four famous art forms from the state of Telangana.</p>
+        <h3>What are we currently doing?</h3>
+        <p>We are hosting a trained model online and accessing it using an API-like method. This webpage uses JavaScript and the TensorFlow.js library to fetch the model files and run the AI model directly in your web browser.</p>
+        <h3>What are the different steps involved in training the model?</h3>
+        <ul>
+            <li><strong>Data Collection:</strong> Gathering dozens of images for each art form category.</li>
+            <li><strong>Data Labeling:</strong> Assigning a correct label to each image to teach the model.</li>
+            <li><strong>Model Training:</strong> Using Google's Teachable Machine to fine-tune a neural network.</li>
+            <li><strong>Exporting & Deployment:</strong> Exporting the model into a web-friendly format.</li>
+        </ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+        const MODEL_URL = "https://teachablemachine.withgoogle.com/models/5mjSqaBMM/";
+        let model, labelContainer, maxPredictions;
+        const statusDiv = document.getElementById("status");
+        const uploadBtnLabel = document.querySelector(".upload-btn");
+        const imageUpload = document.getElementById("image-upload");
+
+        // Dark Mode Logic
+        const themeCheckbox = document.getElementById('theme-checkbox');
+        themeCheckbox.addEventListener('change', () => {
+            if (themeCheckbox.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Check for saved theme preference on page load
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeCheckbox.checked = true;
+        }
+
+        async function init() {
+            const modelURL = MODEL_URL + "model.json";
+            const metadataURL = MODEL_URL + "metadata.json";
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) {
+                const predictionDiv = document.createElement("div");
+                predictionDiv.className = "prediction";
+                predictionDiv.innerHTML = `<span class="prediction-label"></span><div class="bar-container"><div class="bar"></div></div>`;
+                labelContainer.appendChild(predictionDiv);
+            }
+            statusDiv.innerHTML = "Model Loaded. Ready to Classify!";
+            imageUpload.disabled = false;
+        }
+
+        async function predict(imageElement) {
+            const prediction = await model.predict(imageElement);
+            for (let i = 0; i < maxPredictions; i++) {
+                const probability = prediction[i].probability;
+                const className = prediction[i].className;
+                const predictionDiv = labelContainer.childNodes[i];
+                const labelSpan = predictionDiv.querySelector(".prediction-label");
+                const bar = predictionDiv.querySelector(".bar");
+                labelSpan.innerHTML = className;
+                bar.style.width = `${probability * 100}%`;
+            }
+        }
+        
+        imageUpload.addEventListener("change", async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const imageContainer = document.getElementById("image-container");
+                imageContainer.innerHTML = ''; 
+                const img = document.createElement("img");
+                img.src = URL.createObjectURL(file); 
+                img.onload = async () => await predict(img);
+                imageContainer.appendChild(img);
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
